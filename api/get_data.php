@@ -1,7 +1,7 @@
 <?php
 // Configura le credenziali del database Aiven
 $dbhost = 'pg-f9ef4a9-pgdunk-2799.e.aivencloud.com';
-$dbport = '13578';
+$dbport = 13578;
 $dbname = 'defaultdb';
 $dbuser = 'avnadmin';
 $dbpass = 'AVNS_dP-S1FX9jwwx5uKFUFB';
@@ -33,4 +33,5 @@ echo json_encode($data);
 // Chiudi la connessione
 pg_close($conn);
 ?>
+
 
