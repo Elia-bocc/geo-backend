@@ -1,6 +1,6 @@
 import requests
 import psycopg2
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 API_KEY = "c59356581429ee7ba8be1ac1f713ae7e"
 
@@ -36,7 +36,7 @@ def upsert_data(conn, lat, lon, data):
     no2 = comp['no2']
     co = comp['co']
     o3 = comp['o3']
-    timestamp = datetime.utcfromtimestamp(data['list'][0]['dt'])
+    timestamp = datetime.fromtimestamp(data['list'][0]['dt'], tz=timezone.utc)
 
     sql = """
     INSERT INTO "public"."Air Pollution" (geom, pm2_5, pm10, no2, co, o3, aqi, timestamp)
@@ -52,18 +52,26 @@ def upsert_data(conn, lat, lon, data):
         o3    = EXCLUDED.o3,
         aqi   = EXCLUDED.aqi;
     """
-    with conn.cursor() as cur:
-        cur.execute(sql, (lon, lat, pm2_5, pm10, no2, co, o3, aqi, timestamp))
-    conn.commit()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, (lon, lat, pm2_5, pm10, no2, co, o3, aqi, timestamp))
+        conn.commit()
+    except Exception as e:
+        print(f"Upsert error for {lat}, {lon}: {e}")
+        conn.rollback()
 
 # Cleanup old data
 def cleanup_old_data(conn, days=7):
-    cutoff = datetime.utcnow() - timedelta(days=days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     sql = 'DELETE FROM "public"."Air Pollution" WHERE timestamp < %s'
-    with conn.cursor() as cur:
-        cur.execute(sql, (cutoff,))
-    conn.commit()
-    print(f"Deleted records older than {days} days")
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, (cutoff,))
+        conn.commit()
+        print(f"Deleted records older than {days} days")
+    except Exception as e:
+        print(f"Cleanup error: {e}")
+        conn.rollback()
 
 def main():
     conn = psycopg2.connect(
@@ -78,6 +86,7 @@ def main():
             print(f"Upserted data for {lat}, {lon}")
         except Exception as e:
             print(f"Error for {lat}, {lon}: {e}")
+            conn.rollback()
 
     # Cleanup old data
     cleanup_old_data(conn, days=7)
@@ -86,4 +95,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
