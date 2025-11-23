@@ -1,4 +1,7 @@
 <?php
+header("Access-Control-Allow-Origin: *");  // Permette richieste da qualsiasi dominio
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // I have a postGis database with two tables: Air Pollution and Green Spaces.
 // This script allow the leflet map to take de data from this DB through XAMPP.
@@ -58,4 +61,5 @@ echo json_encode($data);
 // Closing connection
 pg_close($conn);
 ?>
+
 
