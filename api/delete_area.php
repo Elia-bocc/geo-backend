@@ -11,6 +11,8 @@ $dbport = 13578;
 $dbname = 'defaultdb';
 $dbuser = 'avnadmin';
 $dbpass = 'AVNS_dP-S1FX9jwwx5uKFUFB';
+$table_name = "Green Spaces";
+$id_column = "id";
 
 // Conncection
 $db_conn = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpass sslmode=require");
@@ -44,4 +46,5 @@ if ($result) {
 pg_close($db_conn);
 
 ?>
+
 
