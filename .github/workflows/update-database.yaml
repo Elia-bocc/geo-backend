@@ -1,32 +1,28 @@
 name: Update Database
 
-# Esegui questa azione ogni 6 ore
+# Excecute the update_database python script every 6 hours
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Ogni 6 ore
-  workflow_dispatch:  # Permette di eseguire manualmente
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   update_database:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout del codice dalla repository
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Configura Python
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
-      # Step 3: Installa le dipendenze necessarie (psycopg2 per PostgreSQL)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install psycopg2 requests
 
-      # Step 4: Esegui lo script Python
       - name: Run the database update script
-        run: python scripts/update_database.py  # Esegui lo script dalla cartella scripts/
+        run: python scripts/update_database.py
