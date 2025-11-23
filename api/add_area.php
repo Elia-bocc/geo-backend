@@ -1,5 +1,6 @@
 <?php
-header("Access-Control-Allow-Origin: *");  // Permette richieste da qualsiasi dominio
+// To manage the limit access
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -18,7 +19,7 @@ $table_name = "Green Spaces";
 $geom_column = "geom";
 $name_column = '"NOME"';
 
-// Conncection
+// Connection
 $db_conn = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpass sslmode=require");
 
 if (!$db_conn) {
@@ -52,6 +53,7 @@ if ($result) {
 pg_close($db_conn);
 
 ?>
+
 
 
 
