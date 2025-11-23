@@ -1,31 +1,15 @@
 <?php
 header('Content-Type: application/json');
 
-// Load local config if exists, otherwise fallback to defaults
-$defaultConfig = require __DIR__ . '/config/config.default.php';
-$localConfigFile = __DIR__ . '/config/config.local.php';
+// Aiven details
+$dbhost = 'pg-f9ef4a9-pgdunk-2799.e.aivencloud.com';
+$dbport = 13578;
+$dbname = 'defaultdb';
+$dbuser = 'avnadmin';
+$dbpass = 'AVNS_dP-S1FX9jwwx5uKFUFB';
 
-if (file_exists($localConfigFile)) {
-    $config = array_merge($defaultConfig, require $localConfigFile);
-} else {
-    $config = $defaultConfig;
-}
-
-// Build connection string
-$conn_string = sprintf(
-    "host=%s port=%s dbname=%s user=%s password=%s",
-    $config['host'],
-    $config['port'],
-    $config['dbname'],
-    $config['user'],
-    $config['password']
-);
-
-$table_name = "Green Spaces";
-$geom_column = "geom";
-$name_column = '"NOME"';
-
-$db_conn = pg_connect($conn_string);
+// Conncection
+$db_conn = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpass sslmode=require");
 
 if (!$db_conn) {
     echo json_encode(['status' => 'error', 'message' => 'Connection to database failed']);
@@ -56,4 +40,5 @@ if ($result) {
 }
 
 pg_close($db_conn);
+
 ?>
