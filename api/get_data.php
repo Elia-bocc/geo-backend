@@ -23,11 +23,21 @@ if (!$conn) {
 }
 
 // Green Spaces
-$result_green = pg_query($conn, 'SELECT ST_AsGeoJSON(t.*) AS feature FROM "public"."Green Spaces" t');
+$sql_green = '
+    SELECT ST_AsGeoJSON(sub.*) AS feature 
+    FROM (
+        SELECT *, ST_Area(geom) as area 
+        FROM "public"."Green Spaces"
+    ) sub
+';
+
+$result_green = pg_query($conn, $sql_green);
+
 $features_green = [];
 while ($row = pg_fetch_assoc($result_green)) {
     $features_green[] = json_decode($row['feature']);
 }
+
 $geojson_green = [
     'type' => 'FeatureCollection',
     'features' => $features_green
@@ -56,5 +66,6 @@ echo json_encode($data);
 // Close connection
 pg_close($conn);
 ?>
+
 
 
