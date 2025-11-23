@@ -1,5 +1,6 @@
 <?php
-header("Access-Control-Allow-Origin: *");  // Permette richieste da qualsiasi dominio
+// To manage the limit access
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -19,7 +20,7 @@ $dbpass = 'AVNS_dP-S1FX9jwwx5uKFUFB';
 $table_name = "Green Spaces";
 $id_column = "id";
 
-// Conncection
+// Connection
 $db_conn = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpass sslmode=require");
 
 if (!$db_conn) {
@@ -51,6 +52,7 @@ if ($result) {
 pg_close($db_conn);
 
 ?>
+
 
 
 
