@@ -1,4 +1,8 @@
 <?php
+header("Access-Control-Allow-Origin: *");  // Permette richieste da qualsiasi dominio
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
 header('Content-Type: application/json');
 
 // Aiven details
@@ -42,3 +46,4 @@ if ($result) {
 pg_close($db_conn);
 
 ?>
+
