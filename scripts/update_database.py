@@ -27,8 +27,8 @@ def get_air_quality_data(lat, lon):
     response.raise_for_status()
     return response.json()
 
-# DB insert/update
-def upsert_data(conn, lat, lon, data):
+# DB insert (solo INSERT)
+def insert_data(conn, lat, lon, data):
     aqi = data['list'][0]['main']['aqi']
     comp = data['list'][0]['components']
     pm2_5 = comp['pm2_5']
@@ -44,20 +44,13 @@ def upsert_data(conn, lat, lon, data):
         ST_SetSRID(ST_MakePoint(%s, %s), 4326),
         %s, %s, %s, %s, %s, %s, %s
     )
-    ON CONFLICT (geom, timestamp) DO UPDATE
-    SET pm2_5 = EXCLUDED.pm2_5,
-        pm10  = EXCLUDED.pm10,
-        no2   = EXCLUDED.no2,
-        co    = EXCLUDED.co,
-        o3    = EXCLUDED.o3,
-        aqi   = EXCLUDED.aqi;
     """
     try:
         with conn.cursor() as cur:
             cur.execute(sql, (lon, lat, pm2_5, pm10, no2, co, o3, aqi, timestamp))
         conn.commit()
     except Exception as e:
-        print(f"Upsert error for {lat}, {lon}: {e}")
+        print(f"Insert error for {lat}, {lon}: {e}")
         conn.rollback()
 
 # Cleanup old data
@@ -82,8 +75,8 @@ def main():
     for lat, lon in coordinates:
         try:
             data = get_air_quality_data(lat, lon)
-            upsert_data(conn, lat, lon, data)
-            print(f"Upserted data for {lat}, {lon}")
+            insert_data(conn, lat, lon, data)
+            print(f"Inserted data for {lat}, {lon}")
         except Exception as e:
             print(f"Error for {lat}, {lon}: {e}")
             conn.rollback()
