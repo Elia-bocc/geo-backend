@@ -1,12 +1,7 @@
 <?php
-header("Access-Control-Allow-Origin: *");  // Permette richieste da qualsiasi dominio
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-// I have a postGis database with two tables: Air Pollution and Green Spaces.
-// This script allow the leflet map to take de data from this DB through XAMPP.
-
-
 header('Content-Type: application/json');
 
 // Aiven details
@@ -16,50 +11,43 @@ $dbname = 'defaultdb';
 $dbuser = 'avnadmin';
 $dbpass = 'AVNS_dP-S1FX9jwwx5uKFUFB';
 
-// Conncection
+// Connection
 $conn = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpass sslmode=require");
-
 if (!$conn) {
     die("Connessione al database fallita: " . pg_last_error());
 }
 
-// Query for "Green Spaces"
-$query_green_spaces = "
-SELECT jsonb_build_object(
-  'type',     'FeatureCollection',
-  'features', jsonb_agg(ST_AsGeoJSON(t.*)::jsonb)
-)
-FROM \"Green Spaces\" t;
-";
+// --- Green Spaces ---
+$result_green = pg_query($conn, 'SELECT ST_AsGeoJSON(t.*) AS feature FROM "public"."Green Spaces" t');
+$features_green = [];
+while ($row = pg_fetch_assoc($result_green)) {
+    $features_green[] = json_decode($row['feature']);
+}
+$geojson_green = [
+    'type' => 'FeatureCollection',
+    'features' => $features_green
+];
 
-// Excecution Green Spaces query
-$result_green_spaces = pg_query($conn, $query_green_spaces);
-$row_green_spaces = pg_fetch_row($result_green_spaces);
-
-// Query for "Air Pollution"
-$query_air_pollution = "
-SELECT jsonb_build_object(
-  'type',     'FeatureCollection',
-  'features', jsonb_agg(ST_AsGeoJSON(t.*)::jsonb)
-)
-FROM \"Air Pollution\" t;
-";
-
-// Excecution Air Pollution query
-$result_air_pollution = pg_query($conn, $query_air_pollution);
-$row_air_pollution = pg_fetch_row($result_air_pollution);
+// --- Air Pollution ---
+$result_air = pg_query($conn, 'SELECT ST_AsGeoJSON(t.*) AS feature FROM "public"."Air Pollution" t');
+$features_air = [];
+while ($row = pg_fetch_assoc($result_air)) {
+    $features_air[] = json_decode($row['feature']);
+}
+$geojson_air = [
+    'type' => 'FeatureCollection',
+    'features' => $features_air
+];
 
 // Combine
 $data = [
-    'green_spaces' => json_decode($row_green_spaces[0]), 
-    'air_pollution' => json_decode($row_air_pollution[0]) 
+    'green_spaces' => $geojson_green,
+    'air_pollution' => $geojson_air
 ];
 
-// Returning json data
+// Output
 echo json_encode($data);
 
-// Closing connection
+// Close connection
 pg_close($conn);
 ?>
-
-
