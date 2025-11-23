@@ -1,4 +1,5 @@
 <?php
+// To manage the limit access
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -21,7 +22,7 @@ if (!$conn) {
     die("Connessione al database fallita: " . pg_last_error());
 }
 
-// --- Green Spaces ---
+// Green Spaces
 $result_green = pg_query($conn, 'SELECT ST_AsGeoJSON(t.*) AS feature FROM "public"."Green Spaces" t');
 $features_green = [];
 while ($row = pg_fetch_assoc($result_green)) {
@@ -32,7 +33,7 @@ $geojson_green = [
     'features' => $features_green
 ];
 
-// --- Air Pollution ---
+// Air Pollution
 $result_air = pg_query($conn, 'SELECT ST_AsGeoJSON(t.*) AS feature FROM "public"."Air Pollution" t');
 $features_air = [];
 while ($row = pg_fetch_assoc($result_air)) {
@@ -55,4 +56,5 @@ echo json_encode($data);
 // Close connection
 pg_close($conn);
 ?>
+
 
