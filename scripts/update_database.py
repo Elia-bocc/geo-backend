@@ -53,18 +53,18 @@ def insert_data(conn, lat, lon, data):
         print(f"Insert error for {lat}, {lon}: {e}")
         conn.rollback()
 
-# Cleanup old data
-def cleanup_old_data(conn, days=7):
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
-    sql = 'DELETE FROM "public"."Air Pollution" WHERE timestamp < %s'
+# Cleanup all data
+def cleanup_all_data(conn):
+    sql = 'DELETE FROM "public"."Air Pollution"'
     try:
         with conn.cursor() as cur:
-            cur.execute(sql, (cutoff,))
+            cur.execute(sql)
         conn.commit()
-        print(f"Deleted records older than {days} days")
+        print("Deleted all records from Air Pollution")
     except Exception as e:
         print(f"Cleanup error: {e}")
         conn.rollback()
+
 
 def main():
     conn = psycopg2.connect(
@@ -72,6 +72,9 @@ def main():
         user=DB_USER, password=DB_PASS, sslmode="require"
     )
 
+    # Cleanup old data
+    cleanup_all_data(conn)
+  
     for lat, lon in coordinates:
         try:
             data = get_air_quality_data(lat, lon)
@@ -81,8 +84,7 @@ def main():
             print(f"Error for {lat}, {lon}: {e}")
             conn.rollback()
 
-    # Cleanup old data
-    cleanup_old_data(conn, days=7)
+    
 
     conn.close()
 
