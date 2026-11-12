@@ -2,14 +2,14 @@ import requests
 import psycopg2
 from datetime import datetime, timedelta, timezone
 
-API_KEY = "c59356581429ee7ba8be1ac1f713ae7e"
+API_KEY = ""
 
 # Aiven DB credentials
-DB_HOST = "pg-f9ef4a9-pgdunk-2799.e.aivencloud.com"
+DB_HOST = ""
 DB_PORT = 13578
 DB_NAME = "defaultdb"
 DB_USER = "avnadmin"
-DB_PASS = "AVNS_dP-S1FX9jwwx5uKFUFB"
+DB_PASS = ""
 
 # Grid coordinates
 base_coord = (38.6864, -9.2286)
