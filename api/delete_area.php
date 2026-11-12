@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 header('Content-Type: application/json');
 
 // Aiven details
-$dbhost = 'pg-f9ef4a9-pgdunk-2799.e.aivencloud.com';
+$dbhost = '';
 $dbport = 13578;
 $dbname = 'defaultdb';
 $dbuser = 'avnadmin';
-$dbpass = 'AVNS_dP-S1FX9jwwx5uKFUFB';
+$dbpass = '';
 $table_name = "Green Spaces";
 $id_column = "id";
 
